@@ -59,69 +59,69 @@ const Page = () => {
       texture.mapping = THREE.EquirectangularReflectionMapping;
       newScene.background = texture;
       newScene.environment = texture;
+
+      const gltfLoader = new GLTFLoader();
+      const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
+      gltfLoader.setDRACOLoader(dracoLoader);
+
+      // Base model
+      gltfLoader.load(
+        "model-transformed.glb",
+        (gltf) => {
+          const mesh = gltf.scene;
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+          mesh.traverse((child) => {
+            if (child.material) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+              child.material.envMapIntensity = 1;
+            }
+          });
+          mesh.name = "Base Model";
+          newScene.add(mesh);
+
+          // Load text
+          const fontLoader = new FontLoader();
+          fontLoader.load("helvetiker_regular.typeface.json", (font) => {
+            const textGeometry = new TextGeometry("@identicals_ff", {
+              font: font,
+              size: 0.5,
+              depth: 0.2,
+              curveSegments: 12,
+              bevelEnabled: true,
+              bevelThickness: 0.03,
+              bevelSize: 0.02,
+              bevelOffset: 0,
+              bevelSegments: 5,
+            });
+
+            textGeometry.center();
+            const textMaterial = new THREE.MeshStandardMaterial({
+              color: 0xca706f,
+              roughness: 2,
+              metalness: 1,
+            });
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+            textMesh.position.set(-14, 5.3, 0.7);
+            textMesh.rotateY(-320 * (Math.PI / 180));
+            textMesh.castShadow = true;
+            textMesh.receiveShadow = true;
+            textMesh.wireframe = true;
+            textMesh.name = "InfoText";
+            newScene.add(textMesh);
+          });
+
+          setLoading(false); // Model loaded, hide the loader
+        },
+        undefined,
+        (error) => {
+          console.error("Error loading the model:", error);
+        }
+      );
     });
-
-    const gltfLoader = new GLTFLoader();
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
-    gltfLoader.setDRACOLoader(dracoLoader);
-
-    // Base model
-    gltfLoader.load(
-      "model-transformed.glb",
-      (gltf) => {
-        const mesh = gltf.scene;
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.traverse((child) => {
-          if (child.material) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-            child.material.envMapIntensity = 1;
-          }
-        });
-        mesh.name = "Base Model";
-        newScene.add(mesh);
-
-        // Load text
-        const fontLoader = new FontLoader();
-        fontLoader.load("helvetiker_regular.typeface.json", (font) => {
-          const textGeometry = new TextGeometry("@identicals_ff", {
-            font: font,
-            size: 0.5,
-            depth: 0.2,
-            curveSegments: 12,
-            bevelEnabled: true,
-            bevelThickness: 0.03,
-            bevelSize: 0.02,
-            bevelOffset: 0,
-            bevelSegments: 5,
-          });
-
-          textGeometry.center();
-          const textMaterial = new THREE.MeshStandardMaterial({
-            color: 0xCA706F,
-            roughness: 2,
-            metalness: 1,
-          });
-          const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-
-          textMesh.position.set(-14, 5.3, 0.7);
-          textMesh.rotateY(-320 * (Math.PI / 180));
-          textMesh.castShadow = true;
-          textMesh.receiveShadow = true;
-          textMesh.wireframe = true;
-          textMesh.name = "InfoText";
-          newScene.add(textMesh);
-        });
-
-        setLoading(false); // Model loaded, hide the loader
-      },
-      undefined,
-      (error) => {
-        console.error("Error loading the model:", error);
-      }
-    );
 
     // Update state
     setScene(newScene);
