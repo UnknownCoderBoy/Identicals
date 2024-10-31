@@ -48,8 +48,8 @@ const Page = () => {
     };
     controls.enableDamping = true;
     controls.enablePan = true;
-    controls.minDistance = 10;
-    controls.maxDistance = 35;
+    controls.minDistance = 6;
+    controls.maxDistance = 15;
     controls.maxPolarAngle = Math.PI / 2 - 0.2;
     controls.minPolarAngle = Math.PI / 4;
     controls.update();
@@ -67,7 +67,7 @@ const Page = () => {
 
       // Base model
       gltfLoader.load(
-        "model-transformed.glb",
+        "model.gltf",
         (gltf) => {
           const mesh = gltf.scene;
           mesh.castShadow = true;
@@ -87,7 +87,7 @@ const Page = () => {
           fontLoader.load("helvetiker_regular.typeface.json", (font) => {
             const textGeometry = new TextGeometry("@identicals_ff", {
               font: font,
-              size: 0.5,
+              size: 0.3,
               depth: 0.2,
               curveSegments: 12,
               bevelEnabled: true,
@@ -105,7 +105,7 @@ const Page = () => {
             });
             const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
-            textMesh.position.set(-14, 5.3, 0.7);
+            textMesh.position.set(-6.4, 2.8, 4.8);
             textMesh.rotateY(-320 * (Math.PI / 180));
             textMesh.castShadow = true;
             textMesh.receiveShadow = true;
